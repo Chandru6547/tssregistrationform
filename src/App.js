@@ -1,10 +1,15 @@
 import { useState } from "react";
 
 function App() {
-  const fixedCollege = "TSS-Avanthi-College";
-  const fixedYear = 3;
+  const COLLEGES = {
+    TSS: "TSS-Avanthi-College",
+    MRCE: "MRCE"
+  };
 
-  const batches = [
+  const tssYear = 3;
+  const mrceYear = 1;
+
+  const tssBatches = [
     "CSE-A",
     "CSE-B",
     "CSE-C",
@@ -16,28 +21,71 @@ function App() {
     "CIV"
   ];
 
+  const mrceBatches = [
+    "CSE-C",
+    "CSD-B",
+    "CSD-A",
+    "CSM-A",
+    "CSM-C",
+    "CSE-A",
+    "CSE-D",
+    "CSD-C",
+    "CSM-B",
+    "ECE-B",
+    "CSE-E",
+    "ECE-A",
+    "CSE-B",
+    "CSE-F"
+  ];
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    college: fixedCollege,
-    year: fixedYear,
+    college: COLLEGES.TSS,
+    year: tssYear,
     batch: "",
     regNo: "",
     phNo: ""
   });
 
+  const [availableBatches, setAvailableBatches] = useState(tssBatches);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
+  /* ---------- HANDLE INPUT CHANGE ---------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // College change logic
+    if (name === "college") {
+      if (value === COLLEGES.MRCE) {
+        setAvailableBatches(mrceBatches);
+        setFormData((prev) => ({
+          ...prev,
+          college: value,
+          year: mrceYear,
+          batch: ""
+        }));
+      } else {
+        setAvailableBatches(tssBatches);
+        setFormData((prev) => ({
+          ...prev,
+          college: value,
+          year: tssYear,
+          batch: ""
+        }));
+      }
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
   };
 
+  /* ---------- HANDLE SUBMIT ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,16 +112,16 @@ function App() {
 
       setSuccess(true);
       setMessage("Student created successfully.");
+
       setFormData({
         name: "",
         email: "",
-        college: fixedCollege,
-        year: fixedYear,
+        college: formData.college,
+        year: formData.year,
         batch: "",
         regNo: "",
         phNo: ""
       });
-
     } catch (error) {
       setSuccess(false);
       setMessage(error.message);
@@ -86,9 +134,7 @@ function App() {
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={styles.title}>Create Student</h1>
-        <p style={styles.subtitle}>
-          TSS Student Management Portal
-        </p>
+        <p style={styles.subtitle}>TSS Student Management Portal</p>
       </div>
 
       <form style={styles.form} onSubmit={handleSubmit}>
@@ -98,16 +144,27 @@ function App() {
           <Input label="Register Number" name="regNo" value={formData.regNo} onChange={handleChange} />
           <Input label="Phone Number" name="phNo" value={formData.phNo} onChange={handleChange} />
 
+          {/* College Dropdown */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>College</label>
-            <input value={formData.college} disabled style={styles.disabledInput} />
+            <select
+              name="college"
+              value={formData.college}
+              onChange={handleChange}
+              style={styles.input}
+            >
+              <option value={COLLEGES.TSS}>TSS-Avanthi-College</option>
+              <option value={COLLEGES.MRCE}>MRCE</option>
+            </select>
           </div>
 
+          {/* Year */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Year</label>
             <input value={formData.year} disabled style={styles.disabledInput} />
           </div>
 
+          {/* Batch Dropdown */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Batch</label>
             <select
@@ -118,7 +175,7 @@ function App() {
               required
             >
               <option value="">Select Batch</option>
-              {batches.map((batch, index) => (
+              {availableBatches.map((batch, index) => (
                 <option key={index} value={batch}>
                   {batch}
                 </option>
@@ -147,6 +204,7 @@ function App() {
   );
 }
 
+/* ---------- REUSABLE INPUT ---------- */
 const Input = ({ label, name, value, onChange }) => (
   <div style={styles.inputGroup}>
     <label style={styles.label}>{label}</label>
@@ -161,15 +219,15 @@ const Input = ({ label, name, value, onChange }) => (
   </div>
 );
 
+/* ---------- STYLES ---------- */
 const styles = {
   container: {
-  minHeight: "100vh",
-  background: "linear-gradient(135deg, #eef2f7, #d9e4f5)",
-  padding: "60px 20px",
-  fontFamily:
-    "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
-},
-
+    minHeight: "100vh",
+    background: "linear-gradient(135deg, #eef2f7, #d9e4f5)",
+    padding: "60px 20px",
+    fontFamily:
+      "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+  },
   header: {
     textAlign: "center",
     marginBottom: "40px"
@@ -209,7 +267,6 @@ const styles = {
     border: "1px solid #cbd5e1",
     fontSize: "14px",
     outline: "none",
-    transition: "all 0.3s ease",
     backgroundColor: "#fff"
   },
   disabledInput: {
@@ -229,8 +286,7 @@ const styles = {
     borderRadius: "6px",
     fontSize: "15px",
     fontWeight: "600",
-    cursor: "pointer",
-    transition: "0.3s"
+    cursor: "pointer"
   },
   message: {
     marginTop: "20px",
