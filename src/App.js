@@ -3,11 +3,13 @@ import { useState } from "react";
 function App() {
   const COLLEGES = {
     TSS: "TSS-Avanthi-College",
-    MRCE: "MRCE"
+    MRCE: "MRCE",
+    BRILLIANT: "Brilliant"
   };
 
   const tssYear = 3;
   const mrceYear = 1;
+  const brilliantYear = 3;
 
   const tssBatches = [
     "CSE-A",
@@ -38,6 +40,13 @@ function App() {
     "CSE-F"
   ];
 
+  const brilliantBatches = [
+    "BRIL",
+    "KNRR",
+    "BRIG",
+    "BRILL"
+  ];
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -57,7 +66,6 @@ function App() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // College change logic
     if (name === "college") {
       if (value === COLLEGES.MRCE) {
         setAvailableBatches(mrceBatches);
@@ -67,7 +75,17 @@ function App() {
           year: mrceYear,
           batch: ""
         }));
-      } else {
+      } 
+      else if (value === COLLEGES.BRILLIANT) {
+        setAvailableBatches(brilliantBatches);
+        setFormData((prev) => ({
+          ...prev,
+          college: value,
+          year: brilliantYear,
+          batch: ""
+        }));
+      } 
+      else {
         setAvailableBatches(tssBatches);
         setFormData((prev) => ({
           ...prev,
@@ -155,6 +173,7 @@ function App() {
             >
               <option value={COLLEGES.TSS}>TSS-Avanthi-College</option>
               <option value={COLLEGES.MRCE}>MRCE</option>
+              <option value={COLLEGES.BRILLIANT}>Brilliant</option>
             </select>
           </div>
 
